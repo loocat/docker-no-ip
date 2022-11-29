@@ -1,4 +1,4 @@
-FROM alpine:3.7
+FROM arm64v8/alpine:3.14
 
 MAINTAINER David Coppit <david@coppit.org>
 
@@ -6,7 +6,7 @@ ENV TERM=xterm-256color
 
 RUN true && \
 \
-echo "http://dl-cdn.alpinelinux.org/alpine/v3.7/community" >> /etc/apk/repositories && \
+echo "http://dl-cdn.alpinelinux.org/alpine/v3.17/community" >> /etc/apk/repositories && \
 apk --update upgrade && \
 \
 # Basics, including runit
@@ -29,14 +29,17 @@ CMD [ "/sbin/boot.sh" ]
 
 VOLUME ["/config"]
 
-ADD https://www.noip.com/client/linux/noip-duc-linux.tar.gz /files/
+#ADD https://www.noip.com/client/linux/noip-duc-linux.tar.gz /files/
+RUN mkdir /files
 
 RUN set -x \
   && chmod a+rwX /files \
-  && tar -C /files -x -f /files/noip-duc-linux.tar.gz noip-2.1.9-1/binaries/noip2-x86_64 \
-  && mv /files/noip-2.1.9-1/binaries/noip2-x86_64 /files \
-  && rm -rf /files/noip-2.1.9-1 /files/noip-duc-linux.tar.gz
+#  && tar -C /files -x -f /files/noip-duc-linux.tar.gz noip-2.1.9-1/binaries/noip2-x86_64 \
+#  && mv /files/noip-2.1.9-1/binaries/noip2-x86_64 /files \
+#  && rm -rf /files/noip-2.1.9-1 /files/noip-duc-linux.tar.gz
+  && true
 
+COPY ./noip2-arm64v8 /files
 COPY ["noip.conf", "create_config.exp", "/files/"]
 
 # run-parts ignores files with "." in them
